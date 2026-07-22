@@ -22,9 +22,9 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationErrorResponse> handleValidation(    MethodArgumentNotValidException exception){
-        Map<String,String> errors= new HashMap<>();
-        exception.getBindingResult().getFieldErrors().forEach(error->{
-            errors.put(error.getField(),error.getDefaultMessage());
+        Map<String,String> error= new HashMap<>();
+        exception.getBindingResult().getFieldErrors().forEach(errors->{
+            error.put(errors.getField(),errors.getDefaultMessage());
 
         });
 
@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
         ValidationErrorResponse response = new ValidationErrorResponse(400,
                 "Validation failed",
                 LocalDateTime.now(),
-                errors);
+                error);
         return ResponseEntity.badRequest()
                 .body(response);
 
