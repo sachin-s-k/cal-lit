@@ -1,6 +1,7 @@
 package com.example.cal_lit_backend.service;
 
 import com.example.cal_lit_backend.config.JwtConfig;
+import com.example.cal_lit_backend.model.Role;
 import com.example.cal_lit_backend.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -16,11 +17,11 @@ import java.util.Date;
 @AllArgsConstructor
 public class JwtService {
   private final JwtConfig jwtConfig;
-    public String generateAccessToken(User user){
+    public Jwt generateAccessToken(User user){
         final long tokenExpiration=86400;
         return generateToken(user, jwtConfig.getAccessTokenExpiration());
     }
-    public String generateRefreshToken(User user){
+    public Jwt generateRefreshToken(User user){
         final long tokenExpiration=604800;
 
 return generateToken(user, jwtConfig.getRefreshTokenExpiration());
@@ -28,34 +29,38 @@ return generateToken(user, jwtConfig.getRefreshTokenExpiration());
 
 
 
-    private String generateToken(User user, long tokenExpiration) {
-        return Jwts
-                .builder().
-                subject(user.getId()).
-                claim("email", user.getEmail()).
-                claim("firstName", user.getFirstName()).
+    private Jwt generateToken(User user, long tokenExpiration) {
+       var claims= Jwts.claims()
+                .subject(user.getId())
+                .add("email",user.getEmail()).
+                add("name",user.getFirstName()).
                 issuedAt(new Date()).
                 expiration(new Date(System.currentTimeMillis() + 1000 * tokenExpiration)).
-                signWith(jwtConfig.getSecretKey()).compact();
-    }
+                build();
 
-    public boolean validateToken(String token){
-     try{
-         var claims = getClaims(token);
-         return claims.getExpiration().after(new Date());
-     }catch (JwtException ex){
-         return false;
-     }
+
+        return  new Jwt(claims, jwtConfig.getSecretKey());
 
     }
+
+    public Jwt parseToken(String token){
+        try {
+            var claims= getClaims(token);
+            return new Jwt(claims, jwtConfig.getSecretKey());
+        }catch (JwtException ex){
+            return null;
+        }
+    }
+
+
 
     private Claims getClaims(String token) {
         return Jwts.parser().
                 verifyWith(jwtConfig.getSecretKey()).
                 build().parseSignedClaims(token).getPayload();
     }
-    public  String getIdFromToken(String token){
-        return getClaims(token).getSubject();
-    }
+
+
+
 
 }

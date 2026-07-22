@@ -1,6 +1,7 @@
 package com.example.cal_lit_backend.config;
 
 import com.example.cal_lit_backend.filter.JwtAuthenticationFilter;
+import com.example.cal_lit_backend.model.Role;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,9 +56,16 @@ return authenticationConfiguration.getAuthenticationManager();
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/*").permitAll()
+                        .requestMatchers("/api/v1/admin/*").hasRole(Role.ADMIN.name())
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).
-                exceptionHandling(c->c.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
+                exceptionHandling(c->
+                {
+                    c.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+                    c.accessDeniedHandler((request, response, accessDeniedException) -> {
+                        response.setStatus(HttpStatus.FORBIDDEN.value());
+                    });
+                });
         ;
 
         return http.build();

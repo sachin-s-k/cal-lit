@@ -27,11 +27,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
        var token=authHeader.replace("Bearer ","");
-        if(!jwtService.validateToken(token)){
+       var jwt= jwtService.parseToken(token);
+        if(jwt==null|| jwt.isExpired()){
             filterChain.doFilter(request,response);
         }
         var authentication = new UsernamePasswordAuthenticationToken(
-                jwtService.getIdFromToken(token),null,null);
+                jwt.getUserId(),null,null);
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         filterChain.doFilter(request,response);

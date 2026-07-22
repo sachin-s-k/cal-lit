@@ -46,7 +46,7 @@ authenticationManager.
 var user= userRepository.findByEmail(loginUserRequest.getEmail()).orElseThrow();
 var accessToken=jwtService.generateAccessToken(user);
 var refreshToken=jwtService.generateRefreshToken(user);
-var cookie= new Cookie("refreshTokne",refreshToken);
+var cookie= new Cookie("refreshTokne",refreshToken.toString());
 cookie.setHttpOnly(true);
 cookie.setPath("/auth/v1/refresh-token");
 cookie.setMaxAge(jwtConfig.getRefreshTokenExpiration());
@@ -54,24 +54,25 @@ cookie.setSecure(true);
 response.addCookie(cookie);
 
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new JwtResponse(accessToken.toString()));
 
     }
 
     public ResponseEntity<JwtResponse>  refresh(
             @CookieValue(value="refreshToken") String refreshToken
     ){
-        if (!jwtService.validateToken(refreshToken)
+       var jwt= jwtService.parseToken(refreshToken);
+        if (jwt==null||jwt.isExpired()
         ) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
 
         }
-        var userId=jwtService.getIdFromToken(refreshToken);
+        var userId= jwt.getUserId();
 
         var user=userRepository.findById(userId).orElseThrow();
         var accessToken= jwtService.generateAccessToken(user);
-        return ResponseEntity.ok(new JwtResponse(accessToken));
+        return ResponseEntity.ok(new JwtResponse(accessToken.toString()));
     }
 
 
