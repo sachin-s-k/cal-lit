@@ -25,6 +25,8 @@
 		<lombok.version>1.18.38</lombok.version>
 	</properties>
 
+
+
 	<dependencies>
 
 		<!-- Spring Boot -->
@@ -68,6 +70,8 @@
 			<version>0.12.7</version>
 		</dependency>
 
+
+
 		<!-- MapStruct -->
 		<dependency>
 			<groupId>org.mapstruct</groupId>
@@ -101,6 +105,19 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<!-- Mongock Spring Boot v3 Runner -->
+		<dependency>
+			<groupId>io.mongock</groupId>
+			<artifactId>mongock-springboot-v3</artifactId>
+			<version>5.5.1</version>
+		</dependency>
+
+		<!-- Mongock Spring Data v4 Driver (compatible with Spring Boot 3.x) -->
+		<dependency>
+			<groupId>io.mongock</groupId>
+			<artifactId>mongodb-springdata-v4-driver</artifactId>
+			<version>5.5.1</version>
 		</dependency>
 
 	</dependencies>

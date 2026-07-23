@@ -14,3 +14,6 @@ spring:
     secret: ${JWT_SECRET}
     accessTokenExpiration: 300 #  5m
     refreshTokenExpiration: 604800 #  7 day
+
+mongock:
+  migration-scan-package:  com.example.cal_lit_backend.migration
