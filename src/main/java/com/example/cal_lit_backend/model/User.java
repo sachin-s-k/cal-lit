@@ -16,4 +16,5 @@ public class User extends  BaseDocument{
     private String email;
     private String password;
     private String profileImageUrl;
+    private String role;
 }

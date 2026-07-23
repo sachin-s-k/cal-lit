@@ -34,6 +34,7 @@ return generateToken(user, jwtConfig.getRefreshTokenExpiration());
                 .subject(user.getId())
                 .add("email",user.getEmail()).
                 add("name",user.getFirstName()).
+               add("role",user.getRole()).
                 issuedAt(new Date()).
                 expiration(new Date(System.currentTimeMillis() + 1000 * tokenExpiration)).
                 build();
